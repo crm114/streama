@@ -58,12 +58,16 @@ module Streama
       def stream_for(actor, options={})
         query = {:receivers => {'$elemMatch' => {:id => actor.id, :type => actor.class.to_s}}}
         query.merge!({:verb => options[:type]}) if options[:type]
+        query.merge!({:created_at.gt => options[:since]}) if options[:since]
+        query.merge!({:created_at.lt => options[:from]}) if options[:from]
         self.where(query).without(:receivers).desc(:created_at)
       end
 
       def stream_of(actor, options={})
          query = {'actor.id' => actor.id, 'actor.type' => actor.class.to_s}
          query.merge!({:verb => options[:type]}) if options[:type]
+         query.merge!({:created_at.gt => options[:since]}) if options[:since]
+         query.merge!({:created_at.lt => options[:from]}) if options[:from]
          self.where(query).without(:receivers).desc(:created_at)
       end
       
